@@ -191,7 +191,7 @@ namespace hudmenu
 
         int key = 0;
         const int first = level.page * kRows;
-        for (int i = first; i < std::min(first + kRows, total); ++i)
+        for (int i = first; i < (std::min)(first + kRows, total); ++i)
         {
             const int index = visible[i];
             if (index >= static_cast<int>(menu->Options().size()))
