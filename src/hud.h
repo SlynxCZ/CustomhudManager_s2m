@@ -1,0 +1,261 @@
+/**
+ * vim: set ts=4 sw=4 tw=99 noet:
+ * =============================================================================
+ * CustomhudManager_s2m
+ * Copyright (C) 2026 Michal "Slynx (˙·٠● S l y n x ●٠·˙)" Přikryl.
+ * =============================================================================
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License, version 3.0, as published by the
+ * Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * As a special exception, Michal "Slynx (˙·٠● S l y n x ●٠·˙)" Přikryl gives
+ * you permission to link the code of this program (as well as its derivative
+ * works) to "Counter-Strike 2," "Source 2," "Steam," and any Game MODs or
+ * server software running on software by Valve Corporation. You must obey the
+ * GNU General Public License in all respects for all other code used.
+ *
+ * Additionally, this exception applies to all derivative works unless
+ * otherwise stated in LICENSE.txt.
+ *
+ * Authors:
+ *   - Michal "Slynx (˙·٠● S l y n x ●٠·˙)" Přikryl
+ *
+ * Project: CustomhudManager_s2m
+ */
+#pragma once
+#include "ICustomhudManager.h"
+
+#include <ehandle.h>
+#include <playerslot.h>
+
+#include <functional>
+#include <string>
+
+class CCSCustomHudLayout;
+class CCSPlayerController;
+
+namespace hud
+{
+    /// One custom_hud_layout the plugin owns: created on first use once a map
+    /// runs, gone with the map, never recreated after a failure until the
+    /// next map (the failure is logged once).
+    struct OwnedLayout
+    {
+        std::string name;
+        const char* targetName = nullptr;
+        CHandle<CCSCustomHudLayout> handle;
+        bool failed = false;
+        /// Runs right after a fresh entity spawned.
+        std::function<void(CCSCustomHudLayout*)> onCreated;
+    };
+
+    class HudManager final : public ICustomhudManager
+    {
+    public:
+        static constexpr int kMaxPlayers = 64;
+        static constexpr int kBarSteps = 20;
+        static constexpr int kToasts = 4;
+        static constexpr int kChips = 4;
+        static constexpr int kFeedRows = 5;
+        /// How long the hit flash and its number stay.
+        static constexpr float kHitSeconds = 0.9f;
+
+        // ICustomhudManager
+        bool IsAvailable() override;
+        void ShowText(CPlayerSlot slot, HudSlot hudSlot, const char* text, float seconds, HudTextStyle style) override;
+        void HideText(CPlayerSlot slot, HudSlot hudSlot) override;
+        void ShowPrompt(CPlayerSlot slot, const char* key, const char* text, float progress) override;
+        void HidePrompt(CPlayerSlot slot) override;
+        void HideAll(CPlayerSlot slot) override;
+        const char* LayoutName() override;
+
+        // ICustomhudManager002
+        void ShowToast(CPlayerSlot slot, HudToastStyle style, const char* title, const char* text, float seconds) override;
+        void ClearToasts(CPlayerSlot slot) override;
+        void ShowAnnounce(CPlayerSlot slot, const char* title, const char* subtitle, float seconds, HudColor color) override;
+        void HideAnnounce(CPlayerSlot slot) override;
+        void ShowCountdown(CPlayerSlot slot, const char* text, float seconds, HudColor color) override;
+        void HideCountdown(CPlayerSlot slot) override;
+        void ShowStatus(CPlayerSlot slot, int chip, const char* label, const char* value, HudColor color) override;
+        void HideStatus(CPlayerSlot slot, int chip) override;
+        void ShowProgress(CPlayerSlot slot, const char* label, const char* value, float progress, HudColor color) override;
+        void HideProgress(CPlayerSlot slot) override;
+        void ShowHit(CPlayerSlot slot, int damage, bool headshot, bool kill) override;
+        void AddFeed(CPlayerSlot slot, HudToastStyle style, const char* time, const char* text, float seconds) override;
+        void ClearFeed(CPlayerSlot slot) override;
+        void ShowOverlay(CPlayerSlot slot, HudOverlay overlay, const char* text, float seconds) override;
+        void HideOverlay(CPlayerSlot slot) override;
+
+        // ICustomhudManager004
+        void OpenMenu(PluginId owner, CPlayerSlot slot, HudMenu* menu) override;
+        void ShowTimer(CPlayerSlot slot, const char* tag, const char* time, const char* sub, HudColor color) override;
+        void HideTimer(CPlayerSlot slot) override;
+        void ShowCard(CPlayerSlot slot, const char* tag, const char* title, const char* sub, HudColor color) override;
+        void HideCard(CPlayerSlot slot) override;
+
+        // ICustomhudManager002
+        void ShowReveal(CPlayerSlot slot, const HudReveal& reveal) override;
+        void HideReveal(CPlayerSlot slot) override;
+        void ShowStats(CPlayerSlot slot, const HudStats& stats) override;
+        void HideStats(CPlayerSlot slot) override;
+
+        // ICustomhudManager003
+        void ShowTracker(CPlayerSlot slot, const HudTracker& tracker) override;
+        void HideTracker(CPlayerSlot slot) override;
+
+        // plugin
+        void Init();
+
+        /// The text layout, spawned if it can be; null without a map or after
+        /// a failed spawn.
+        CCSCustomHudLayout* TextLayout();
+
+        /// The menu layout ("s2t_menu"), same rules. Clicks on it go to
+        /// hudmenu::OnLayoutClick.
+        CCSCustomHudLayout* MenuLayout();
+
+        /// The menu layout only if it already exists -- for closing.
+        CCSCustomHudLayout* MenuLayoutIfAny();
+
+        /// Once a frame: whatever has a time is hidden when it is up.
+        void Tick();
+
+        /// The slot's state is reset so the next occupant does not inherit it.
+        void OnClientDisconnect(CPlayerSlot slot);
+
+        /// Level shutdown: the entities are gone, forget them and every state.
+        void Clear();
+
+    private:
+        /// Something shown for a while: the text of a slot, a toast, the
+        /// announcement, ... `variant` is the index of the class currently on
+        /// the panel out of a family (colour, style), -1 for none.
+        struct Timed
+        {
+            bool shown = false;
+            float expire = -1.0f;
+            int variant = -1;
+        };
+
+        struct SlotState : Timed
+        {
+            int size = -1;
+            /// Index into the offset class tables (0 = -10 steps), -1 unknown.
+            int offX = -1;
+            int offY = -1;
+        };
+
+        /// A toast or a feed row keeps its texts, so the stack can shift
+        /// when a new one comes in.
+        struct Card : Timed
+        {
+            std::string title;
+            std::string text;
+        };
+
+        /// What the stats panel last sent this player, so a call every second
+        /// only sends what changed. -1 / kUnset: unknown, always sent.
+        struct StatsState
+        {
+            static constexpr int kTexts = 2 + 2 * HudStats::kRows + 4;
+            bool shown = false;
+            std::string text[kTexts];
+            bool textKnown[kTexts] = {};
+            int titleVariant = -1;
+            int rowShown[HudStats::kRows] = { -1, -1, -1, -1, -1 };
+            int rowVariant[HudStats::kRows] = { -1, -1, -1, -1, -1 };
+            int barShown = -1;
+            int barStep = -1;
+            int barVariant = -1;
+            int footShown = -1;
+            int footSideShown[2] = { -1, -1 };
+            int footSideVariant[2] = { -1, -1 };
+        };
+
+        /// What the tracker last sent, like StatsState.
+        struct TrackerState
+        {
+            static constexpr int kTexts = 3 + 3 * HudTracker::kRows;
+            bool shown = false;
+            std::string text[kTexts];
+            bool textKnown[kTexts] = {};
+            int variant = -1;
+            int hasTag = -1;
+            int hasFooter = -1;
+            int rowShown[HudTracker::kRows] = { -1, -1, -1, -1 };
+            int rowDone[HudTracker::kRows] = { -1, -1, -1, -1 };
+            int rowHasSub[HudTracker::kRows] = { -1, -1, -1, -1 };
+            int rowHasBar[HudTracker::kRows] = { -1, -1, -1, -1 };
+            int rowBar[HudTracker::kRows] = { -1, -1, -1, -1 };
+        };
+
+        struct PlayerState
+        {
+            SlotState slots[static_cast<int>(HudSlot::Count)];
+            bool prompt = false;
+            bool bar = false;
+            int barStep = -1;
+
+            Card toasts[kToasts];
+            bool toastAnim = false;
+            Timed announce;
+            bool announceAnim = false;
+            Timed countdown;
+            bool countdownAnim = false;
+            Timed chips[kChips];
+            bool statusShown = false;
+            Timed progress;
+            int progressStep = -1;
+            Timed hit;
+            bool hitAnim = false;
+            bool hitHeadshot = false;
+            bool hitKill = false;
+            bool damageShown = false;
+            Card feed[kFeedRows];
+            bool feedShown = false;
+            Timed overlay;
+            Timed timer;
+            bool timerAnim = false;
+            Timed card;
+            /// What the card last sent, so a call every second sends only changes.
+            std::string cardText[3];
+            bool cardKnown = false;
+            Timed reveal;
+            bool revealAnim = false;
+            StatsState stats;
+            TrackerState tracker;
+        };
+
+        CCSCustomHudLayout* Ensure(OwnedLayout& layout);
+        PlayerState* StateOf(CCSPlayerController* player);
+        void ResetState(PlayerState& state);
+
+        /// Swaps one class of a family (c-*, s-*, t-*, o-*, w*) on a panel:
+        /// the old one off, the new one on. `current` remembers which is on.
+        void SetVariant(CCSCustomHudLayout* layout, CCSPlayerController* player, const char* panel,
+                        const char* const* classes, int count, int& current, int wanted);
+
+        /// Flips the a/b pair that restarts an entrance animation.
+        void Restart(CCSCustomHudLayout* layout, CCSPlayerController* player, const char* panel,
+                     const char* classA, const char* classB, bool& flag);
+
+        /// Draws a toast or feed card into its panel from what the state holds.
+        void DrawCard(CCSCustomHudLayout* layout, CCSPlayerController* player, const char* panel,
+                      const char* titleLabel, const char* textLabel, Card& card, bool show);
+
+        OwnedLayout m_text;
+        OwnedLayout m_menu;
+        PlayerState m_players[kMaxPlayers];
+    };
+
+    extern HudManager hudManager;
+}
