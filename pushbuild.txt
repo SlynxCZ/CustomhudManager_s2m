@@ -1,2 +1,2 @@
 # One line per release: append what changed and the CI cuts the next tag.
-First Source2Mod release: ICustomhudManager004 ported from CustomhudManager_s2t; HudMenu follows the Source2Mod menu options (evaluators per player, text lines, submenus, CloseOnSelect, StayOnPage, timeout, OnMenuEnd reasons).
+First Source2Mod release: ICustomhudManager004 ported from CustomhudManager_s2t; HudMenu follows the Source2Mod menu options (evaluators per player, text lines, submenus, CloseOnSelect, StayOnPage, timeout, OnMenuEnd reasons). Built against plugin API 5 (ISource2ModHooks, g_pSource2ModAPI).
