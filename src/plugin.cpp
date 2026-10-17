@@ -47,15 +47,20 @@ bool HudPlugin::Load(PluginId id, ISource2ModAPI* api, char* error, size_t maxle
 {
     SOURCE2MOD_SAVEVARS();
 
-    if (!g_pSource2ModCustomHud || !g_pSource2ModMenus || !g_pSource2ModEntities)
+    if (!g_pSource2ModCustomHud || !g_pSource2ModMenus || !g_pSource2ModEntities || !g_pSource2ModHooks)
     {
         if (error && maxlen)
-            g_Source2ModAPI->Format(error, maxlen, "the core is missing an interface this plugin needs (custom HUD, menus, entities): update Source2Mod");
+            g_Source2ModAPI->Format(error, maxlen, "the core is missing an interface this plugin needs (custom HUD, menus, entities, hooks): update Source2Mod");
         return false;
     }
 
-    // OnGameFrame, OnLevelShutdown, OnClientDisconnect, OnSource2ModQuery.
+    // OnLevelShutdown, OnSource2ModQuery.
     api->AddListener(this, this);
+
+    // After the game's frame; before the engine lets a player go. Dropped by
+    // the core when this plugin unloads.
+    g_pSource2ModHooks->Hook(HookPoint::GameFrame, HookTarget::All(), SOURCE2MOD_MEMBER(this, &HudPlugin::OnGameFrame), true);
+    g_pSource2ModHooks->Hook(HookPoint::ClientDisconnect, HookTarget::All(), SOURCE2MOD_MEMBER(this, &HudPlugin::OnClientDisconnect));
 
     hud::hudManager.Init();
 
@@ -86,9 +91,10 @@ void* HudPlugin::OnSource2ModQuery(const char* iface, int* ret)
     return nullptr;
 }
 
-void HudPlugin::OnGameFrame(bool simulating, bool firstTick, bool lastTick)
+HookReturn<void> HudPlugin::OnGameFrame(GameFrameContext& ctx, bool post)
 {
     hud::hudManager.Tick();
+    return Action::Ignore;
 }
 
 void HudPlugin::OnLevelShutdown()
@@ -97,9 +103,10 @@ void HudPlugin::OnLevelShutdown()
     hud::hudManager.Clear();
 }
 
-void HudPlugin::OnClientDisconnect(CPlayerSlot slot, ENetworkDisconnectionReason reason, const char* name, uint64 xuid, const char* networkId)
+HookReturn<void> HudPlugin::OnClientDisconnect(ClientDisconnectContext& ctx, bool post)
 {
-    hud::hudManager.OnClientDisconnect(slot);
+    hud::hudManager.OnClientDisconnect(ctx.slot);
+    return Action::Ignore;
 }
 
 const char* HudPlugin::GetAuthor()

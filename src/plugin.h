@@ -75,9 +75,11 @@ public:
 
     // ISource2ModListener
     void* OnSource2ModQuery(const char* iface, int* ret) override;
-    void OnGameFrame(bool simulating, bool firstTick, bool lastTick) override;
     void OnLevelShutdown() override;
-    void OnClientDisconnect(CPlayerSlot slot, ENetworkDisconnectionReason reason, const char* name, uint64 xuid, const char* networkId) override;
+
+    // ISource2ModHooks
+    HookReturn<void> OnGameFrame(GameFrameContext& ctx, bool post);
+    HookReturn<void> OnClientDisconnect(ClientDisconnectContext& ctx, bool post);
 
     const char* GetAuthor() override;
     const char* GetName() override;
