@@ -104,6 +104,12 @@ jobs:
         with:
           repository: SlynxCZ/ambuild
           path: ambuild
+      # AMBuild breaks on the runner's newest Python (importlib.machinery is no longer
+      # imported by importlib itself)
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       - name: Install AMBuild
         shell: pwsh
         run: python -m pip install .\ambuild
