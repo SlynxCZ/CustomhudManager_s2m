@@ -50,7 +50,7 @@ bool HudPlugin::Load(PluginId id, ISource2ModAPI* api, char* error, size_t maxle
     if (!g_pSource2ModCustomHud || !g_pSource2ModMenus || !g_pSource2ModEntities || !g_pSource2ModHooks)
     {
         if (error && maxlen)
-            g_Source2ModAPI->Format(error, maxlen, "the core is missing an interface this plugin needs (custom HUD, menus, entities, hooks): update Source2Mod");
+            g_pSource2ModAPI->Format(error, maxlen, "the core is missing an interface this plugin needs (custom HUD, menus, entities, hooks): update Source2Mod");
         return false;
     }
 

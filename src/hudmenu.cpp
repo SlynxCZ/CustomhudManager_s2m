@@ -78,7 +78,7 @@ namespace hudmenu
         float Now()
         {
             static float last = 0.0f;
-            if (CGlobalVars* globals = g_Source2ModAPI ? g_Source2ModAPI->GetGlobalVars() : nullptr)
+            if (CGlobalVars* globals = g_pSource2ModAPI ? g_pSource2ModAPI->GetGlobalVars() : nullptr)
                 last = globals->curtime;
             return last;
         }
