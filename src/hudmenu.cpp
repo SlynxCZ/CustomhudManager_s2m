@@ -73,6 +73,9 @@ namespace hudmenu
         std::unordered_map<int, HudMenuInstance*> s_bySlot;
         std::unordered_map<int, uint64_t> s_serialBySlot;
         uint64_t s_nextSerial = 0;
+        /// Set by CloseAll(): an OnMenuEnd that reopens a HUD menu while the
+        /// plugin unloads would leave an instance of this library in the core.
+        bool s_closingAll = false;
 
         // The engine's game time, as the HUD elements use it (hud.cpp).
         float Now()
@@ -522,7 +525,7 @@ namespace hudmenu
 
     void Open(PluginId owner, CCSPlayerController* player, HudMenu* menu)
     {
-        if (!player || !menu || !g_pSource2ModMenus) return;
+        if (!player || !menu || !g_pSource2ModMenus || s_closingAll) return;
 
         // The core takes the instance: it destroys it (Destroy(), so in this
         // library) when the menu closes, is replaced, the player leaves or
@@ -549,6 +552,7 @@ namespace hudmenu
     void CloseAll()
     {
         // CloseActiveMenu destroys the instance, which erases it from the map.
+        s_closingAll = true;
         std::vector<int> slots;
         slots.reserve(s_bySlot.size());
         for (const auto& kv : s_bySlot)
@@ -562,5 +566,6 @@ namespace hudmenu
 
         s_bySlot.clear();
         s_serialBySlot.clear();
+        s_closingAll = false;
     }
 }
