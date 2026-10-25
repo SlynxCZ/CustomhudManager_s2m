@@ -23,10 +23,6 @@ def ConfigureBinary(context, binary, sdk, MMSPlugin):
   for other_sdk in MMSPlugin.sdk_manifests:
     cxx.defines += ['SE_{}={}'.format(other_sdk['define'], other_sdk['code'])]
 
-  # The version the plugin reports: the release tag and the commit.
-  sha = os.environ.get("GITHUB_SHA_SHORT", "Local")
-  semver = os.environ.get("SEMVER", "Local")
-  cxx.defines += [
-    f'GITHUB_SHA="{sha}"',
-    f'SEMVER="{semver}"',
-  ]
+  # version_gen.h, generated from plugin-metadata.json (AMBuildScript).
+  cxx.cxxincludes += [os.path.join(builder.buildPath, 'versioning')]
+  cxx.sourcedeps += MMSPlugin.version_header_deps

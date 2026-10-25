@@ -14,6 +14,8 @@ set(SOURCE_FILES
 add_source2mod_plugin(${PROJECT_NAME} ${SOURCE_FILES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE
+        # version_gen.h, from plugin-metadata.json (shared.cmake).
+        ${VERSION_GEN_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/src
         # ICustomhudManager.h: the interface other plugins include.
         ${CMAKE_CURRENT_SOURCE_DIR}/public

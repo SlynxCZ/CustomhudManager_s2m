@@ -1,0 +1,7 @@
+{
+    "name": "customhud_manager",
+    "display_name": "CustomHUD Manager",
+    "description": "On-screen texts, HUD elements and menus on the Panorama HUD (ICustomhudManager)",
+    "author": "Slynx (˙·٠● S l y n x ●٠·˙)",
+    "version": "{{semver}} @ {{github-sha}}"
+}

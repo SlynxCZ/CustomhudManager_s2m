@@ -32,16 +32,16 @@
  * Project: CustomhudManager_s2m
  */
 #include "plugin.h"
+#include "version_gen.h"
 
 #include "hud.h"
 #include "hudmenu.h"
 
 #include <cstring>
 
-#define VERSION_STRING SEMVER " @ " GITHUB_SHA
 
 HudPlugin g_Plugin;
-SOURCE2MOD_EXPOSE(CustomhudManager, g_Plugin);
+SOURCE2MOD_EXPOSE(PLUGIN_NAME, g_Plugin);
 
 bool HudPlugin::Load(PluginId id, ISource2ModAPI* api, char* error, size_t maxlen, bool late)
 {
@@ -111,20 +111,20 @@ HookReturn<void> HudPlugin::OnClientDisconnect(ClientDisconnectContext& ctx, boo
 
 const char* HudPlugin::GetAuthor()
 {
-    return reinterpret_cast<const char*>(u8"Slynx (˙·٠● S l y n x ●٠·˙)");
+    return PLUGIN_AUTHOR;
 }
 
 const char* HudPlugin::GetName()
 {
-    return "CustomHUD Manager";
+    return PLUGIN_DISPLAY_NAME;
 }
 
 const char* HudPlugin::GetDescription()
 {
-    return "On-screen texts, HUD elements and menus on the Panorama HUD (ICustomhudManager)";
+    return PLUGIN_DESCRIPTION;
 }
 
 const char* HudPlugin::GetVersion()
 {
-    return VERSION_STRING;
+    return PLUGIN_FULL_VERSION;
 }

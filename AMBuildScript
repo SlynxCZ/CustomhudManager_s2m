@@ -44,6 +44,24 @@ Linux = builder.Import('makefiles/ambuild/linux.ambuild')
 Windows = builder.Import('makefiles/ambuild/windows.ambuild')
 
 
+def LoadPluginMetadata():
+  path = os.path.join(builder.sourcePath, 'plugin-metadata.json')
+  with open(path, 'r', encoding='utf-8') as fp:
+    return json.load(fp)
+
+def LoadVersionGen():
+  # The same generator the CMake build runs, imported rather than shelled out to
+  # so the header text can go through builder.AddOutputFile() and a metadata
+  # edit retriggers the compile.
+  path = os.path.join(builder.sourcePath, 'tools', 'version_gen.py')
+  spec = importlib.util.spec_from_file_location('version_gen', path)
+  module = importlib.util.module_from_spec(spec)
+  spec.loader.exec_module(module)
+  return module
+
+plugin_metadata = LoadPluginMetadata()
+version_gen = LoadVersionGen()
+
 class MMSPluginConfig(object):
   def __init__(self):
     self.sdk_manifests = []
@@ -52,16 +70,13 @@ class MMSPluginConfig(object):
     self.binaries = []
     self.all_targets = []
     self.target_archs = set()
+    self.version_header_deps = []
 
     if builder.options.plugin_name is not None:
       self.plugin_name = builder.options.plugin_name
     else:
-      self.plugin_name = 'customhud_manager'
+      self.plugin_name = plugin_metadata['name']
 
-    if builder.options.plugin_alias is not None:
-      self.plugin_alias = builder.options.plugin_alias
-    else:
-      self.plugin_alias = 'customhud'
 
     if builder.options.targets:
       target_archs = builder.options.targets.split(',')
@@ -133,6 +148,19 @@ class MMSPluginConfig(object):
     binary = cxx.Library(name)
     return binary
   
+  def generateVersioningHeader(self):
+    builder.SetBuildFolder('/')
+
+    # Metadata edits retrigger the compile through sourcedeps (shared.ambuild).
+    builder.AddConfigureFile(os.path.join(builder.sourcePath, 'plugin-metadata.json'))
+
+    shorthash = version_gen.git_shorthash(builder.sourcePath)
+    text = version_gen.render(plugin_metadata, shorthash)
+
+    self.version_header_deps += [
+      builder.AddOutputFile(os.path.join('versioning', 'version_gen.h'), text.encode('utf-8'))
+    ]
+
   def Source2ModLibrary(self, context, compiler, name, sdk):
     binary = self.Library(compiler, name)
     Shared.ConfigureBinary(context, binary, sdk, self)
@@ -151,6 +179,7 @@ class MMSPluginConfig(object):
 MMSPlugin = MMSPluginConfig()
 MMSPlugin.detectSDKs()
 MMSPlugin.configure()
+MMSPlugin.generateVersioningHeader()
 
 BuildScripts = [
   'makefiles/ambuild/AMBuilder',
