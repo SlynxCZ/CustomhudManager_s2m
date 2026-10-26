@@ -36,8 +36,8 @@
 #include "hud.h"
 #include "plugin.h"
 
-#include <source2mod/schema/entity/classes/CCSCustomHudLayout.h>
-#include <source2mod/schema/entity/classes/CCSPlayerController.h>
+#include <source2mod/sdk/schema/classes/CCSCustomHudLayout.h>
+#include <source2mod/sdk/schema/classes/CCSPlayerController.h>
 
 #include <algorithm>
 #include <cstdlib>
