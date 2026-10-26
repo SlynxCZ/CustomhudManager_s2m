@@ -3,3 +3,4 @@ First Source2Mod release: ICustomhudManager004 ported from CustomhudManager_s2t;
 Built against Source2Mod plugin API 6 (needs the matching Source2Mod release); MSVC build fix.
 No HUD menu can be reopened while the plugin unloads (an instance of the unloaded library stayed in the core). Needs the matching Source2Mod release.
 Metadata from plugin-metadata.json.
+Built against the Source2Mod SDK's new source2mod/sdk/ include layout; no behaviour change.
