@@ -59,8 +59,8 @@ bool HudPlugin::Load(PluginId id, ISource2ModAPI* api, char* error, size_t maxle
 
     // After the game's frame; before the engine lets a player go. Dropped by
     // the core when this plugin unloads.
-    g_pSource2ModHooks->Hook(HookPoint::GameFrame, HookTarget::All(), SOURCE2MOD_MEMBER(this, &HudPlugin::OnGameFrame), true);
-    g_pSource2ModHooks->Hook(HookPoint::ClientDisconnect, HookTarget::All(), SOURCE2MOD_MEMBER(this, &HudPlugin::OnClientDisconnect));
+    g_pSource2ModHooks->Hook(HookPoint::GameFrame, HookTarget::All(), { this, &HudPlugin::OnGameFrame }, true);
+    g_pSource2ModHooks->Hook(HookPoint::ClientDisconnect, HookTarget::All(), { this, &HudPlugin::OnClientDisconnect });
 
     hud::hudManager.Init();
 
