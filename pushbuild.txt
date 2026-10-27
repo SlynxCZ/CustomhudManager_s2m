@@ -4,3 +4,4 @@ Built against Source2Mod plugin API 6 (needs the matching Source2Mod release); M
 No HUD menu can be reopened while the plugin unloads (an instance of the unloaded library stayed in the core). Needs the matching Source2Mod release.
 Metadata from plugin-metadata.json.
 Built against the Source2Mod SDK's new source2mod/sdk/ include layout; no behaviour change.
+Rebuilt against the Source2Mod SDK with ISource2ModClients002 (the core no longer serves 001 and logged a rebuild error at load); no code changes.
