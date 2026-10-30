@@ -191,7 +191,7 @@ namespace hud
         if (!created)
         {
             layout.failed = true;
-            SOURCE2MOD_LOG(&g_Plugin, "custom_hud_layout '%s' could not be spawned; HUD texts and menus are off until the next map\n", layout.name.c_str());
+            SOURCE2MOD_LOG("custom_hud_layout '%s' could not be spawned; HUD texts and menus are off until the next map\n", layout.name.c_str());
             return nullptr;
         }
 

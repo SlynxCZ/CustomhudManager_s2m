@@ -55,7 +55,7 @@ bool HudPlugin::Load(PluginId id, ISource2ModAPI* api, char* error, size_t maxle
     }
 
     // OnLevelShutdown, OnSource2ModQuery.
-    api->AddListener(this, this);
+    api->AddListener(this);
 
     // After the game's frame; before the engine lets a player go. Dropped by
     // the core when this plugin unloads.
