@@ -894,6 +894,15 @@ namespace hud
         if (!state || !layout)
             return;
 
+        // A client still loading when the card was last sent never saw it, and
+        // only `show` would follow -- an empty box in the default colour. So
+        // coming back from hidden sends everything again.
+        if (!state->card.shown)
+        {
+            state->cardKnown = false;
+            state->card.variant = -1;
+        }
+
         // Meant to be called every second with the same texts: only what
         // changed goes to the player.
         const char* texts[3] = { Safe(tag), Safe(title), Safe(sub) };
