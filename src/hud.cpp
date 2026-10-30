@@ -833,7 +833,7 @@ namespace hud
 
     // ---- ICustomhudManager004 ------------------------------------------------------
 
-    void HudManager::OpenMenu(PluginId owner, CPlayerSlot slot, HudMenu* menu)
+    void HudManager::OpenMenu(ISource2ModPlugin* owner, CPlayerSlot slot, HudMenu* menu)
     {
         CCSPlayerController* player = CCSPlayerController::FromSlot(slot);
         if (!player)

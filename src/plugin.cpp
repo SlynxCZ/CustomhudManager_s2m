@@ -43,7 +43,7 @@
 HudPlugin g_Plugin;
 SOURCE2MOD_EXPOSE(PLUGIN_NAME, g_Plugin);
 
-bool HudPlugin::Load(PluginId id, ISource2ModAPI* api, char* error, size_t maxlen, bool late)
+bool HudPlugin::Load(ISource2ModAPI* api, char* error, size_t maxlen, bool late)
 {
     SOURCE2MOD_SAVEVARS();
 

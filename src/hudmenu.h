@@ -159,7 +159,7 @@ namespace hudmenu
     };
 
     /// Opens `menu` for the player through the core's menu system.
-    void Open(PluginId owner, CCSPlayerController* player, HudMenu* menu);
+    void Open(ISource2ModPlugin* owner, CCSPlayerController* player, HudMenu* menu);
 
     /// The click callback of the menu layout: routes to the player's instance.
     void OnLayoutClick(CCSPlayerController* player, const char* buttonId);

@@ -506,7 +506,7 @@ public:
      * @param slot   Target player
      * @param menu   The menu; must outlive the time it is open
      */
-    virtual void OpenMenu(PluginId owner, CPlayerSlot slot, HudMenu* menu) = 0;
+    virtual void OpenMenu(ISource2ModPlugin* owner, CPlayerSlot slot, HudMenu* menu) = 0;
 
     /**
      * @brief The timer: a tag pill, the time and a line after it in a row

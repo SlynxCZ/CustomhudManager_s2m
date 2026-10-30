@@ -6,3 +6,4 @@ Metadata from plugin-metadata.json.
 Built against the Source2Mod SDK's new source2mod/sdk/ include layout; no behaviour change.
 Rebuilt against the Source2Mod SDK with ISource2ModClients002 (the core no longer serves 001 and logged a rebuild error at load); no code changes.
 Rebuilt with the author string's U+0387 dot, the same as the other plugins (s2m list lines up again), against the current Source2Mod SDK.
+Rebuilt for Source2Mod plugin API 8: per-plugin interface instances, no plugin ids in calls, modules from g_pSource2ModModules. OpenMenu takes the owner plugin's class.

@@ -70,7 +70,7 @@ class HudPlugin final : public ISource2ModPlugin,
                         public ISource2ModListener
 {
 public:
-    bool Load(PluginId id, ISource2ModAPI* api, char* error, size_t maxlen, bool late) override;
+    bool Load(ISource2ModAPI* api, char* error, size_t maxlen, bool late) override;
     bool Unload(char* error, size_t maxlen) override;
 
     // ISource2ModListener

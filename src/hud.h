@@ -96,7 +96,7 @@ namespace hud
         void HideOverlay(CPlayerSlot slot) override;
 
         // ICustomhudManager004
-        void OpenMenu(PluginId owner, CPlayerSlot slot, HudMenu* menu) override;
+        void OpenMenu(ISource2ModPlugin* owner, CPlayerSlot slot, HudMenu* menu) override;
         void ShowTimer(CPlayerSlot slot, const char* tag, const char* time, const char* sub, HudColor color) override;
         void HideTimer(CPlayerSlot slot) override;
         void ShowCard(CPlayerSlot slot, const char* tag, const char* title, const char* sub, HudColor color) override;

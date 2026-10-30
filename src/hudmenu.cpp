@@ -523,14 +523,14 @@ namespace hudmenu
 
     // ---- free functions --------------------------------------------------------
 
-    void Open(PluginId owner, CCSPlayerController* player, HudMenu* menu)
+    void Open(ISource2ModPlugin* owner, CCSPlayerController* player, HudMenu* menu)
     {
         if (!player || !menu || !g_pSource2ModMenus || s_closingAll) return;
 
         // The core takes the instance: it destroys it (Destroy(), so in this
         // library) when the menu closes, is replaced, the player leaves or
         // `owner` unloads.
-        g_pSource2ModMenus->OpenMenu(owner, player, new HudMenuInstance(player, menu));
+        g_pSource2ModMenus->OpenMenuFor(owner, player, new HudMenuInstance(player, menu));
     }
 
     void OnLayoutClick(CCSPlayerController* player, const char* buttonId)
