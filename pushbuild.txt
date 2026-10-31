@@ -8,3 +8,4 @@ Rebuilt against the Source2Mod SDK with ISource2ModClients002 (the core no longe
 Rebuilt with the author string's U+0387 dot, the same as the other plugins (s2m list lines up again), against the current Source2Mod SDK.
 Rebuilt for Source2Mod plugin API 8: per-plugin interface instances, no plugin ids in calls, modules from g_pSource2ModModules. OpenMenu takes the owner plugin's class.
 SourcePawn natives for ICustomhudManager and HUD menus (customhudmanager/customhudmanager.inc). The C++ header moved to public/customhudmanager/.
+Rebuilt for Source2Mod plugin API 10.
