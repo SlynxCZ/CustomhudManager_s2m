@@ -50,7 +50,7 @@
 #include "source2mod/ISource2ModJSON.h"
 #include "source2mod/ISource2ModMemory.h"
 #include "source2mod/ISource2ModMenus.h"
-#include "ICustomhudManager.h"
+#include "customhudmanager/ICustomhudManager.h"
 #include "source2mod/ISource2ModModule.h"
 #include "source2mod/ISource2ModSQL.h"
 #include "source2mod/ISource2ModNetworkMessages.h"
@@ -88,3 +88,5 @@ public:
 };
 
 extern HudPlugin g_Plugin;
+
+void RegisterCustomHudNatives();

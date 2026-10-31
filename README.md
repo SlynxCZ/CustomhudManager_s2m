@@ -19,13 +19,13 @@ have.
 
 ## Use from a plugin
 
-The interface is this plugin's, not the core's: `public/ICustomhudManager.h`
+The interface is this plugin's, not the core's: `public/customhudmanager/ICustomhudManager.h`
 is the header (add `public/` to your include path -- a git submodule of this
 repository is the usual way), you declare the pointer, and you fetch it once
 every plugin is loaded, treating null as "no HUD":
 
 ```cpp
-#include "ICustomhudManager.h"
+#include "customhudmanager/ICustomhudManager.h"
 
 ICustomhudManager* g_pCustomhudManager = nullptr;
 
@@ -43,7 +43,7 @@ A `HudMenu` opens with `g_pCustomhudManager->OpenMenu(g_PluginID, player, &menu)
 and a dead player gets the cursor even in the keys mode, since the slot binds
 do nothing without a pawn.
 
-`public/ICustomhudManager.h` documents every call and the layout contract; the [website](https://source2mod.net/docs/panorama/hud) has
+`public/customhudmanager/ICustomhudManager.h` documents every call and the layout contract; the [website](https://source2mod.net/docs/panorama/hud) has
 the guide.
 
 A `HudMenu` takes the same options as any Source2Mod menu: per-player
@@ -73,3 +73,17 @@ the commit as its version (`s2m list`).
 ## License
 
 GPLv3, with the same linking exception as Source2Mod. See `LICENSE`.
+
+## SourcePawn
+
+```sourcepawn
+#include <customhudmanager/customhudmanager>
+
+CustomHud.ShowToast(slot, HudToast_Success, "Saved", "Your settings are saved", 4.0);
+
+CustomHudMenu menu = new CustomHudMenu("Pick one");
+menu.AddOption("First", OnPick);
+menu.Open(slot);
+```
+
+To compile against it, add this repo's `public/scripting` to spcomp's include paths, or use the `scripting/include` folder that comes with a release.

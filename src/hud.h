@@ -32,7 +32,7 @@
  * Project: CustomhudManager_s2m
  */
 #pragma once
-#include "ICustomhudManager.h"
+#include "customhudmanager/ICustomhudManager.h"
 
 #include <ehandle.h>
 #include <playerslot.h>

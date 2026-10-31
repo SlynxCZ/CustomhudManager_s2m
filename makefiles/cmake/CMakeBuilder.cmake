@@ -7,6 +7,7 @@
 # makefiles/ambuild/AMBuilder. Listed, not globbed: a new .cpp goes into both.
 set(SOURCE_FILES
         src/plugin.cpp
+        src/natives.cpp
         src/hud.cpp
         src/hudmenu.cpp
 )
