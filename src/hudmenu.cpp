@@ -445,10 +445,24 @@ namespace hudmenu
         // copy: a handler that rebuilds this same menu in place (ClearOptions
         // + AddMenuOption) destroys the option it is running from.
         ChatMenuOption opt = menu->Options()[index];
+        const std::string textBefore = opt.Text;
         menu->OnOptionSelected(player, opt, index);
 
         if (!IsOpen(slot, serial))
             return;
+
+        // The handler worked on the copy: what it changed on its option (a toggle's "[ON]"/"[OFF]" in
+        // option.Text, Disabled) goes back into the menu so Display() below shows it. Only while the
+        // menu still holds that option -- a handler that rebuilt the menu already put its new text in.
+        if (Current() == menu && index < static_cast<int>(menu->Options().size()))
+        {
+            ChatMenuOption& stored = menu->Options()[index];
+            if (stored.Text == textBefore)
+            {
+                stored.Text = opt.Text;
+                stored.Disabled = opt.Disabled;
+            }
+        }
 
         if (opt.CloseOnSelect)
         {

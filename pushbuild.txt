@@ -10,3 +10,4 @@ Rebuilt for Source2Mod plugin API 8: per-plugin interface instances, no plugin i
 SourcePawn natives for ICustomhudManager and HUD menus (customhudmanager/customhudmanager.inc). The C++ header moved to public/customhudmanager/.
 Rebuilt for Source2Mod plugin API 10.
 Rebuilt against the current Source2Mod SDK (ISource2ModMenus009, ISource2ModEntities006).
+HUD menus: what an option's handler changes on its option (a toggle's [ON]/[OFF] text, disabled) shows right away; the handler ran on a copy and the menu kept the old text.
