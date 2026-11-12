@@ -11,3 +11,4 @@ SourcePawn natives for ICustomhudManager and HUD menus (customhudmanager/customh
 Rebuilt for Source2Mod plugin API 10.
 Rebuilt against the current Source2Mod SDK (ISource2ModMenus009, ISource2ModEntities006).
 HUD menus: what an option's handler changes on its option (a toggle's [ON]/[OFF] text, disabled) shows right away; the handler ran on a copy and the menu kept the old text.
+CS2 14197 (2026-11-11): rebuilt against the new net message layout (s2sdk) -- the old build calls the removed INetworkMessageInternal virtuals.
